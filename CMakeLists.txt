@@ -1,0 +1,57 @@
+cmake_minimum_required(VERSION 3.0)
+PROJECT (CV_RPi) # PROJECT_SOURCE_DIR
+
+ADD_DEFINITIONS(-DMPU6050)
+
+######################### configuration ###########################
+OPTION(BUILD_RPi_PROGRAM "build RPi program" ON)
+IF (BUILD_RPi_PROGRAM)
+    MESSAGE(STATUS "build RPi program")
+ELSE()
+    MESSAGE(STATUS "build linux program")
+ENDIF()
+
+
+SET(BUILD_RPi 0) # 0:编译UUBUNTU版本　　１：编译RPi版本
+SET(DEBUG_UBUNTU 0) # 0:release版本　　１：UBUNTU端debug版本
+
+
+MESSAGE(STATUS "PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}")
+IF(BUILD_RPi_PROGRAM)
+    # 指定opencv 3.1本地库
+    set(OpenCV_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/opencv/opencv_3.1_rpi_pc/share/OpenCV")
+    MESSAGE(STATUS "OpenCV_DIR=${OpenCV_DIR}")
+    SET(CMAKE_SYSTEM_NAME RPi)#告知当前使用的是交叉编译方式，必须配置  实际调用的是本地：/usr／bin中的编译器
+    MESSAGE(STATUS "TOOLCHAIN_DIR=${TOOLCHAIN_DIR}")
+    SET(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_DIR})
+    SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    SET(CMAKE_C_COMPILER "arm-linux-gnueabihf-gcc")
+    SET(CMAKE_CXX_COMPILER "arm-linux-gnueabihf-g++")
+    MESSAGE(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
+ELSE()
+    
+ENDIF()
+
+SET(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
+SET(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib/")
+
+#设定头文件目录
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include/inv_mpu_lib)
+
+
+#并且把该目录设为连接目录
+LINK_DIRECTORIES( ${PROJECT_SOURCE_DIR}/lib)
+
+ADD_SUBDIRECTORY(./lib/I2Cdev)	
+ADD_SUBDIRECTORY(./src)
+ADD_SUBDIRECTORY(./tests)
+
+
+
+
+
+
+
